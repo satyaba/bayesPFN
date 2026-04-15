@@ -109,7 +109,7 @@ class PFNTransformer(nn.Module):
         cls_output = x[:, 0, :]
 
         logits = self.classification_head(cls_output)
-        logits = logits.unsqueeze(0).expand(n_test, -1)
+        logits = logits.expand(n_test, -1)
 
         return logits
 
