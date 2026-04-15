@@ -1,0 +1,23 @@
+tabpfn_head:
+  base:
+    model_path: "auto"
+    n_estimators: 8
+
+  head:
+    d_model: 128
+    n_classes: 2
+
+  training:
+    learning_rate: 1.0e-3
+    weight_decay: 0.01
+    epochs: 10
+    batch_size: 1
+    n_datasets: 2500
+    n_features: 32
+    n_samples_range: [500, 2000]
+
+  imbalance:
+    zone_a_ratio: [1.0, 5.0]
+    zone_b_ratio: [5.0, 10.0]
+    zone_c_ratio: [10.0, 100.0]
+    zone_proportions: [0.60, 0.10, 0.30]
