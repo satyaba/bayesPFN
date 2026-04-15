@@ -130,7 +130,7 @@ class BayesPFNv1(nn.Module):
         n_classes: int = 2,
         d_ff: Optional[int] = None,
         dropout: float = 0.1,
-        max_seq_length: int = 5000,
+        max_seq_length: int = 15000,
     ):
         super().__init__()
 
