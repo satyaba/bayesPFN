@@ -99,35 +99,29 @@ def run_diagnostics():
         x_transformed = model.pfn.transformer(x_with_cls)
         print(f"Transformed shape: {x_transformed.shape}")
         
-        cls_output = x_transformed[:, 0, :]
-        print(f"CLS output shape: {cls_output.shape}")
-        
-        logits = model.pfn.classification_head(cls_output)
-        print(f"Logits shape (before expand): {logits.shape}")
-        
+        # NEW: Use per-sample positions for test samples
+        n_train = len(train_indices)
         n_test = len(test_indices)
-        logits_expanded = logits.expand(n_test, -1)
-        print(f"Logits shape (after expand): {logits_expanded.shape}")
+        test_positions = torch.arange(1 + n_train, 1 + n_train + n_test, device=device)
+        print(f"Test positions: {test_positions[:10].cpu().tolist()} ... (total: {n_test})")
+        
+        test_outputs = x_transformed[:, test_positions, :]
+        print(f"Test outputs shape: {test_outputs.shape}")
+        
+        logits = model.pfn.classification_head(test_outputs.squeeze(0))
+        print(f"Logits shape: {logits.shape}")
         
         print("\n" + "=" * 40)
-        print("4. THE CORE ISSUE: CLS TOKEN OUTPUT")
-        print("=" * 40)
-        
-        print(f"CLS output values: {cls_output}")
-        print(f"This single CLS output is expanded to ALL {n_test} test samples")
-        print("This is why all test samples get the same prediction!")
-        
-        print("\n" + "=" * 40)
-        print("5. VERIFICATION: Are test predictions actually identical?")
+        print("4. VERIFICATION: Are test predictions now distinct?")
         print("=" * 40)
         
         # Run full model
         model_logits = model(features_tensor, train_indices, test_indices, train_labels)
-        print(f"Model output logits: {model_logits[:5]}")
+        print(f"Model output logits (first 5):\n{model_logits[:5]}")
         print(f"Are all logits identical? {torch.allclose(model_logits[0], model_logits[1])}")
         
         probs = torch.softmax(model_logits, dim=-1)
-        print(f"Probabilities: {probs[:5]}")
+        print(f"Probabilities (first 5):\n{probs[:5]}")
         
     print("\n" + "=" * 40)
     print("DIAGNOSIS COMPLETE")

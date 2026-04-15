@@ -80,7 +80,7 @@ class PFNTransformer(nn.Module):
         Forward pass for ICL prediction.
 
         Args:
-            features: Flattened feature vector [seq_length, n_features]
+            features: Feature vector [seq_length, n_features]
             train_indices: Indices of training samples in sequence
             test_indices: Indices of test samples in sequence
             train_labels: Labels for training samples (for conditioning)
@@ -106,10 +106,15 @@ class PFNTransformer(nn.Module):
 
         x = self.transformer(x)
 
-        cls_output = x[:, 0, :]
+        test_positions = torch.arange(1 + n_train, 1 + n_train + n_test, device=x.device)
+        test_outputs = x[:, test_positions, :]
 
+<<<<<<< HEAD
         logits = self.classification_head(cls_output)
         logits = logits.expand(n_test, -1)
+=======
+        logits = self.classification_head(test_outputs.squeeze(0))
+>>>>>>> feature/bayespfn-v1-imbalance-prior
 
         return logits
 
