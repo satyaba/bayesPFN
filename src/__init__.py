@@ -5,6 +5,7 @@ from .generator import SyntheticDataGenerator, ICLDataset
 from .model import BayesPFNv1, PFNTransformer, create_model
 from .trainer import Trainer, create_training_setup
 from .evaluation import Evaluator, load_model_from_checkpoint
+from .disk_dataset import DiskICLDataset, collate_disk_batch
 
 __all__ = [
     "StratifiedZoneSampler",
@@ -17,4 +18,6 @@ __all__ = [
     "create_training_setup",
     "Evaluator",
     "load_model_from_checkpoint",
+    "DiskICLDataset",
+    "collate_disk_batch",
 ]
