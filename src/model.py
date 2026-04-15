@@ -109,12 +109,7 @@ class PFNTransformer(nn.Module):
         test_positions = torch.arange(1 + n_train, 1 + n_train + n_test, device=x.device)
         test_outputs = x[:, test_positions, :]
 
-<<<<<<< HEAD
-        logits = self.classification_head(cls_output)
-        logits = logits.expand(n_test, -1)
-=======
         logits = self.classification_head(test_outputs.squeeze(0))
->>>>>>> feature/bayespfn-v1-imbalance-prior
 
         return logits
 
