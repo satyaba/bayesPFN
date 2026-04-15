@@ -131,11 +131,11 @@ def collate_disk_batch(batch: list) -> dict:
         offset += n_samples
 
     return {
-        "features": np.vstack(X_train_list),
-        "train_indices": np.concatenate(train_indices_list),
-        "test_indices": np.concatenate(test_indices_list),
-        "train_labels": np.concatenate(y_train_list),
-        "test_labels": np.concatenate(y_test_list),
+        "features": torch.tensor(np.vstack(X_train_list), dtype=torch.float32),
+        "train_indices": torch.tensor(np.concatenate(train_indices_list), dtype=torch.long),
+        "test_indices": torch.tensor(np.concatenate(test_indices_list), dtype=torch.long),
+        "train_labels": torch.tensor(np.concatenate(y_train_list), dtype=torch.long),
+        "test_labels": torch.tensor(np.concatenate(y_test_list), dtype=torch.long),
         "n_features_list": [item["n_features"] for item in batch],
     }
 
