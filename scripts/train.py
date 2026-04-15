@@ -68,6 +68,17 @@ def parse_args():
         default=None,
         help="Path to checkpoint to resume from",
     )
+    parser.add_argument(
+        "--use-disk",
+        action="store_true",
+        help="Load from pre-generated disk datasets instead of generating on-the-fly",
+    )
+    parser.add_argument(
+        "--data-dir",
+        type=str,
+        default="./data/synthetic",
+        help="Directory for pre-generated datasets",
+    )
 
     return parser.parse_args()
 
@@ -116,31 +127,45 @@ def main():
 
     print(f"Model parameters: {sum(p.numel() for p in model.parameters()):,}")
 
-    sampler = StratifiedZoneSampler(
-        zone_a_ratio=tuple(data_config["imbalance"]["zone_a_ratio"]),
-        zone_b_ratio=tuple(data_config["imbalance"]["zone_b_ratio"]),
-        zone_c_ratio=tuple(data_config["imbalance"]["zone_c_ratio"]),
-        zone_proportions=tuple(data_config["imbalance"]["zone_proportions"]),
-        power_law_exponent=data_config["imbalance"]["power_law_exponent"],
-    )
+    if args.use_disk:
+        from disk_dataset import DiskICLDataset, collate_disk_batch
 
-    generator = SyntheticDataGenerator(
-        n_features=data_config["n_features"],
-        n_samples_range=tuple(data_config["n_samples_range"]),
-        n_classes=data_config["n_classes"],
-    )
+        print(f"Loading pre-generated datasets from: {args.data_dir}")
+        dataset = DiskICLDataset(
+            data_dir=args.data_dir,
+            n_features=data_config["n_features"],
+            n_classes=data_config["n_classes"],
+        )
+        collate_fn = collate_disk_batch
+        print(f"Loaded {len(dataset)} datasets from disk")
+    else:
+        sampler = StratifiedZoneSampler(
+            zone_a_ratio=tuple(data_config["imbalance"]["zone_a_ratio"]),
+            zone_b_ratio=tuple(data_config["imbalance"]["zone_b_ratio"]),
+            zone_c_ratio=tuple(data_config["imbalance"]["zone_c_ratio"]),
+            zone_proportions=tuple(data_config["imbalance"]["zone_proportions"]),
+            power_law_exponent=data_config["imbalance"]["power_law_exponent"],
+        )
 
-    dataset = ICLBatchDataset(
-        generator=generator,
-        sampler=sampler,
-        n_datasets=n_datasets,
-        n_classes=model_config["n_classes"],
-    )
+        generator = SyntheticDataGenerator(
+            n_features=data_config["n_features"],
+            n_samples_range=tuple(data_config["n_samples_range"]),
+            n_classes=data_config["n_classes"],
+        )
+
+        dataset = ICLBatchDataset(
+            generator=generator,
+            sampler=sampler,
+            n_datasets=n_datasets,
+            n_classes=model_config["n_classes"],
+        )
+        collate_fn = collate_icl_batch
+        print(f"Generated {n_datasets} datasets on-the-fly")
 
     loader = torch.utils.data.DataLoader(
         dataset,
         batch_size=train_config["batch_size"],
-        collate_fn=collate_icl_batch,
+        collate_fn=collate_fn,
         num_workers=4,
         pin_memory=True,
         shuffle=True,
