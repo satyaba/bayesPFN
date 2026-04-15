@@ -19,7 +19,7 @@ bayespfn_v1:
     save_interval: 5000
 
   data:
-    n_features_range: [10, 50]
+    n_features: 32
     n_samples_range: [500, 2000]
     n_classes: 2
     feature_interaction_degree: 2

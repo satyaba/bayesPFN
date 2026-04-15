@@ -125,7 +125,7 @@ def main():
     )
 
     generator = SyntheticDataGenerator(
-        n_features_range=tuple(data_config["n_features_range"]),
+        n_features=data_config["n_features"],
         n_samples_range=tuple(data_config["n_samples_range"]),
         n_classes=data_config["n_classes"],
     )

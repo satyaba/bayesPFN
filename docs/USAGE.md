@@ -131,7 +131,7 @@ bayespfn_v1:
     num_epochs: 10
 
   data:
-    n_features_range: [10, 50]
+    n_features: 32
     n_samples_range: [500, 2000]
 
     imbalance:           # Stratified zones

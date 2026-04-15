@@ -17,12 +17,12 @@ class SyntheticDataGenerator:
 
     def __init__(
         self,
-        n_features_range: Tuple[int, int] = (10, 50),
+        n_features: int = 32,
         n_samples_range: Tuple[int, int] = (500, 2000),
         n_classes: int = 2,
         feature_interaction_degree: int = 2,
     ):
-        self.n_features_range = n_features_range
+        self.n_features = n_features
         self.n_samples_range = n_samples_range
         self.n_classes = n_classes
         self.feature_interaction_degree = feature_interaction_degree
@@ -133,7 +133,7 @@ class SyntheticDataGenerator:
         np.random.seed(random_state)
 
         n_samples = np.random.randint(*self.n_samples_range)
-        n_features = np.random.randint(*self.n_features_range)
+        n_features = self.n_features
 
         X = self.generate_features(n_samples, n_features)
         y = self.generate_labels_via_gbdt(X, random_state=random_state)

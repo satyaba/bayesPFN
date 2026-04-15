@@ -18,7 +18,7 @@ from imbalance import StratifiedZoneSampler, verify_zone_properties
 def generate_dataset_cache(
     output_dir: Path,
     n_datasets: int,
-    n_features_range: tuple = (10, 50),
+    n_features: int = 32,
     n_samples_range: tuple = (500, 2000),
     n_classes: int = 2,
     verify: bool = False,
@@ -33,7 +33,7 @@ def generate_dataset_cache(
 
     sampler = StratifiedZoneSampler()
     generator = SyntheticDataGenerator(
-        n_features_range=n_features_range,
+        n_features=n_features,
         n_samples_range=n_samples_range,
         n_classes=n_classes,
     )
@@ -47,7 +47,7 @@ def generate_dataset_cache(
 
     metadata = {
         "n_datasets": n_datasets,
-        "n_features_range": list(n_features_range),
+        "n_features": n_features,
         "n_samples_range": list(n_samples_range),
         "n_classes": n_classes,
         "pi_values": pi_values.tolist(),
@@ -117,16 +117,10 @@ def main():
         help="Number of datasets to generate",
     )
     parser.add_argument(
-        "--n-features-min",
+        "--n-features",
         type=int,
-        default=10,
-        help="Minimum number of features",
-    )
-    parser.add_argument(
-        "--n-features-max",
-        type=int,
-        default=50,
-        help="Maximum number of features",
+        default=32,
+        help="Number of features per dataset",
     )
     parser.add_argument(
         "--n-samples-min",
@@ -151,7 +145,7 @@ def main():
     generate_dataset_cache(
         output_dir=args.output_dir,
         n_datasets=args.n_datasets,
-        n_features_range=(args.n_features_min, args.n_features_max),
+        n_features=args.n_features,
         n_samples_range=(args.n_samples_min, args.n_samples_max),
         verify=args.verify,
     )

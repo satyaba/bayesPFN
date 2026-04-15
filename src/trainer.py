@@ -249,7 +249,7 @@ if __name__ == "__main__":
     model, optimizer, scheduler = create_training_setup(device=device)
     print(f"Model parameters: {sum(p.numel() for p in model.parameters()):,}")
 
-    generator = SyntheticDataGenerator(n_features_range=(10, 50))
+    generator = SyntheticDataGenerator(n_features=32)
     sampler = StratifiedZoneSampler()
     dataset = ICLBatchDataset(
         generator=generator,
