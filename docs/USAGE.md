@@ -250,6 +250,24 @@ Check:
 2. Model dimension matches n_features in data
 3. GPU is available (`torch.cuda.is_available()`)
 
+### Low GPU Utilization (< 30%)
+
+If GPU utilization is low during training, the data loading pipeline is likely bottlenecked:
+
+1. **Increase num_workers** in DataLoader (in `scripts/train.py`):
+   ```python
+   loader = torch.utils.data.DataLoader(
+       dataset,
+       batch_size=train_config["batch_size"],
+       collate_fn=collate_icl_batch,
+       num_workers=4,        # Increase from 0
+       pin_memory=True,      # Enable for faster CPU→GPU transfer
+       shuffle=True,
+   )
+   ```
+
+2. **Monitor improvement**: GPU utilization should jump to 70%+
+
 ### Evaluation Fails
 
 Ensure:
