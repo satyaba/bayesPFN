@@ -44,7 +44,7 @@ class DiskICLDataset(Dataset):
             Dictionary with X_train, y_train, X_test, y_test arrays
         """
         dataset_info = self.metadata["datasets"][idx]
-        pkl_path = dataset_info["path"]
+        pkl_path = Path(dataset_info["path"])
 
         if not pkl_path.exists():
             raise FileNotFoundError(f"Dataset file not found: {pkl_path}")
