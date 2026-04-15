@@ -60,7 +60,7 @@ class ICLBatchDataset(Dataset):
 
 
 def collate_icl_batch(batch: list) -> dict:
-    """Collate function for ICL batches."""
+    """Collate function for ICL batches with feature padding."""
     max_n_features = max(item["n_features"] for item in batch)
 
     features_list = []
@@ -76,11 +76,16 @@ def collate_icl_batch(batch: list) -> dict:
         n_train = len(item["train_indices"])
         n_test = len(item["test_indices"])
 
-        features_list.append(item["features"])
-        train_indices_list.append(item["train_indices"] + offset)
-        test_indices_list.append(item["test_indices"] + offset)
-        train_labels_list.append(item["train_labels"])
-        test_labels_list.append(item["test_labels"])
+        features = item["features"]
+        if features.shape[1] < max_n_features:
+            pad_width = max_n_features - features.shape[1]
+            features = np.pad(features, ((0, 0), (0, pad_width)), mode='constant')
+
+        features_list.append(torch.tensor(features, dtype=torch.float32))
+        train_indices_list.append(torch.tensor(item["train_indices"], dtype=torch.long) + offset)
+        test_indices_list.append(torch.tensor(item["test_indices"], dtype=torch.long) + offset)
+        train_labels_list.append(torch.tensor(item["train_labels"], dtype=torch.long))
+        test_labels_list.append(torch.tensor(item["test_labels"], dtype=torch.long))
         n_features_list.append(item["n_features"])
 
         offset += n_train + n_test

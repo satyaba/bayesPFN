@@ -201,13 +201,12 @@ class ICLDataset:
         n_features = X_train.shape[1]
 
         all_features = np.vstack([X_train, X_test])
-        all_features_flat = all_features.reshape(1, -1).squeeze()
 
         train_indices = list(range(n_train))
         test_indices = [n_train + i for i in range(n_test)]
 
         return {
-            "features": all_features_flat,
+            "features": all_features,
             "train_indices": train_indices,
             "test_indices": test_indices,
             "train_labels": y_train,
