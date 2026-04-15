@@ -5,8 +5,8 @@ import os
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
-from imbalance import StratifiedZoneSampler
-from generator import SyntheticDataGenerator
+from src.imbalance import StratifiedZoneSampler
+from src.generator import SyntheticDataGenerator
 
 
 def generate_imbalance_stratified_datasets(
