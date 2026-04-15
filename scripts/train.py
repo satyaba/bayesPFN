@@ -69,6 +69,12 @@ def parse_args():
         help="Path to checkpoint to resume from",
     )
     parser.add_argument(
+        "--learning-rate",
+        type=float,
+        default=None,
+        help="Learning rate (overrides config)",
+    )
+    parser.add_argument(
         "--use-disk",
         action="store_true",
         help="Load from pre-generated disk datasets instead of generating on-the-fly",
@@ -114,18 +120,21 @@ def main():
         config={**model_config, **train_config},
     )
 
+    learning_rate = args.learning_rate if args.learning_rate else train_config["learning_rate"]
+
     model, optimizer, scheduler = create_training_setup(
         n_features=model_config["n_features"],
         d_model=model_config["d_model"],
         n_heads=model_config["n_heads"],
         n_layers=model_config["n_layers"],
         n_classes=model_config["n_classes"],
-        learning_rate=train_config["learning_rate"],
+        learning_rate=learning_rate,
         weight_decay=train_config["weight_decay"],
         device=args.device,
     )
 
     print(f"Model parameters: {sum(p.numel() for p in model.parameters()):,}")
+    print(f"Learning rate: {learning_rate}")
 
     if args.use_disk:
         from disk_dataset import DiskICLDataset, collate_disk_batch

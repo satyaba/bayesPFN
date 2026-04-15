@@ -154,6 +154,9 @@ class Trainer:
             print(f"  Labels:      {test_labels[:10].cpu().tolist()}")
             print(f"  Probabilities: {probs[:5].detach().cpu().tolist()}")
 
+            grad_norm = loss.grad.norm().item() if loss.grad is not None else 0.0
+            print(f"  Grad norm: {grad_norm:.6f}")
+
         return {
             "loss": loss.item(),
             "accuracy": accuracy,
