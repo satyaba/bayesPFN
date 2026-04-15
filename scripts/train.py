@@ -141,7 +141,8 @@ def main():
         dataset,
         batch_size=train_config["batch_size"],
         collate_fn=collate_icl_batch,
-        num_workers=0,
+        num_workers=4,
+        pin_memory=True,
         shuffle=True,
     )
 
