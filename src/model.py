@@ -102,11 +102,11 @@ class PFNTransformer(nn.Module):
         x = x + self.position_embedding(positions)
 
         cls_tokens = self.cls_token.expand(1, -1, -1)
-        x = torch.cat([cls_tokens, x], dim=0)
+        x = torch.cat([cls_tokens, x], dim=1)
 
         x = self.transformer(x)
 
-        cls_output = x[0]
+        cls_output = x[:, 0, :]
 
         logits = self.classification_head(cls_output)
         logits = logits.unsqueeze(0).expand(n_test, -1)
