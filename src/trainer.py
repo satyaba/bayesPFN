@@ -147,6 +147,13 @@ class Trainer:
         preds = torch.argmax(logits, dim=-1)
         accuracy = (preds == test_labels).float().mean().item()
 
+        if self.global_step % 100 == 0:
+            probs = torch.softmax(logits, dim=-1)
+            print(f"\nStep {self.global_step}")
+            print(f"  Predictions: {preds[:10].cpu().tolist()}")
+            print(f"  Labels:      {test_labels[:10].cpu().tolist()}")
+            print(f"  Probabilities: {probs[:5].detach().cpu().tolist()}")
+
         return {
             "loss": loss.item(),
             "accuracy": accuracy,
